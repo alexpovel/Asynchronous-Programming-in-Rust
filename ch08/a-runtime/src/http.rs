@@ -50,7 +50,7 @@ impl Future for HttpGetFuture {
         if self.stream.is_none() {
             println!("FIRST POLL - START OPERATION");
             self.write_request();
-            
+
             // CHANGED
             runtime::registry()
                 .register(self.stream.as_mut().unwrap(), Token(0), Interest::READABLE)

@@ -11,15 +11,13 @@ fn main() {
     runtime.block_on(future);
 }
 
-
-
 // =================================
 // We rewrite this:
 // =================================
 
 // coroutine fn async_main() {
 //     println!("Program starting");
-//     
+//
 //     let txt = http::Http::get("/600/HelloAsyncAwait").wait;
 //     println!("{txt}");
 //     let txt = http::Http::get("/400/HelloAsyncAwait").wait;
@@ -31,7 +29,7 @@ fn main() {
 // Into this:
 // =================================
 
-fn async_main() -> impl Future<Output=String> {
+fn async_main() -> impl Future<Output = String> {
     Coroutine0::new()
 }
 
@@ -48,23 +46,24 @@ struct Coroutine0 {
 
 impl Coroutine0 {
     fn new() -> Self {
-        Self { state: State0::Start }
+        Self {
+            state: State0::Start,
+        }
     }
 }
-
 
 impl Future for Coroutine0 {
     type Output = String;
 
     fn poll(&mut self) -> PollState<Self::Output> {
         loop {
-        match self.state {
+            match self.state {
                 State0::Start => {
                     // ---- Code you actually wrote ----
                     println!("Program starting");
 
                     // ---------------------------------
-                    let fut1 = Box::new( http::Http::get("/600/HelloAsyncAwait"));
+                    let fut1 = Box::new(http::Http::get("/600/HelloAsyncAwait"));
                     self.state = State0::Wait1(fut1);
                 }
 
@@ -75,7 +74,7 @@ impl Future for Coroutine0 {
                             println!("{txt}");
 
                             // ---------------------------------
-                            let fut2 = Box::new( http::Http::get("/400/HelloAsyncAwait"));
+                            let fut2 = Box::new(http::Http::get("/400/HelloAsyncAwait"));
                             self.state = State0::Wait2(fut2);
                         }
                         PollState::NotReady => break PollState::NotReady,
@@ -96,7 +95,7 @@ impl Future for Coroutine0 {
                     }
                 }
 
-                State0::Resolved => panic!("Polled a resolved future")
+                State0::Resolved => panic!("Polled a resolved future"),
             }
         }
     }
